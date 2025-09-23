@@ -18,8 +18,8 @@ Our ultimate mission is to **reduce backlogs, improve efficiency, and increase t
 
 | Layer               | Technology                                                                 |
 |:--------------------|:---------------------------------------------------------------------------|
-| 📱 **Mobile App**        | Flutter                                      |
-| 🤖 **Machine Learning**  | Python, Scikit-learn, Pandas, NumPy, TensorFlow, PyTorch                    |
+| 📱 **Mobile App**        | Flutter, Firebase                                      |
+| 🤖 **Machine Learning**  | Python, Pandas, NumPy, TensorFlow, PyTorch                    |
 
 ---
 
