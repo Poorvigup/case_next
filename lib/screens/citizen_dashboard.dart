@@ -21,7 +21,16 @@ class _CitizenDashboardState extends State<CitizenDashboard> {
         showExitConfirmationDialog(context);
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('My Cases'), automaticallyImplyLeading: false),
+        appBar: AppBar(title: const Text('My Cases'), 
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: () {
+            Navigator.of(context).pushNamed('/user-profile');
+          },
+        ),
+      ],),
         body: _cases.isEmpty
             ? const _EmptyStateWidget(
                 imagePath: 'assets/images/empty_citizen.png',

@@ -22,7 +22,18 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
         showExitConfirmationDialog(context);
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Case Dashboard'), automaticallyImplyLeading: false),
+        appBar: AppBar(title: const Text('Case Dashboard'), 
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: () {
+            Navigator.of(context).pushNamed('/user-profile');
+          },
+        ),
+      ],
+      // -----------------------
+    ),
         body: _cases.isEmpty
             ? const _EmptyStateWidget(
                 imagePath: 'assets/images/empty_lawyer.png',

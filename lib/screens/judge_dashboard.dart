@@ -23,7 +23,16 @@ class _JudgeDashboardState extends State<JudgeDashboard> {
         showExitConfirmationDialog(context);
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Court Priority Queue'), automaticallyImplyLeading: false),
+        appBar: AppBar(title: const Text('Court Priority Queue'), 
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: () {
+            Navigator.of(context).pushNamed('/user-profile');
+          },
+        ),
+      ],),
         body: _priorityCases.isEmpty
             ? const _EmptyStateWidget(
                 imagePath: 'assets/images/empty_judge.png',

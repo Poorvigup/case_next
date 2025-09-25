@@ -16,7 +16,7 @@ class AppTheme {
       colorScheme: baseTheme.colorScheme.copyWith(
         primary: primaryColor,
         secondary: accentColor,
-        background: backgroundColor,
+        surface: backgroundColor,
       ),
       scaffoldBackgroundColor: backgroundColor,
       appBarTheme: AppBarTheme(

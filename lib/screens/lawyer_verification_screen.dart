@@ -1,5 +1,7 @@
 // lib/screens/lawyer_verification_screen.dart
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LawyerVerificationScreen extends StatefulWidget {
@@ -11,6 +13,7 @@ class LawyerVerificationScreen extends StatefulWidget {
 
 class _LawyerVerificationScreenState extends State<LawyerVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _regNumberController = TextEditingController(); 
   String? _selectedStateBar;
   
   // A simplified list. In a real app, this would be the official list of state bar councils.
@@ -22,12 +25,52 @@ class _LawyerVerificationScreenState extends State<LawyerVerificationScreen> {
     'Uttarakhand', 'West Bengal'
   ];
 
-  void _finishVerification() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      print('Lawyer Verification Successful');
-      Navigator.of(context).pushNamedAndRemoveUntil('/lawyer-dashboard', (route) => false);
+  Future<void> _finishVerification() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
+    showDialog(context: context, barrierDismissible: false, builder: (context) => const Center(child: CircularProgressIndicator()));
+
+    try {
+      // 1. Get the current user's unique ID (UID) from Firebase Auth
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("No user logged in!"); // This should not happen
+      }
+      final uid = user.uid;
+
+      // 2. Prepare the data to be saved
+      final userData = {
+        'role': 'lawyer', // Set the role
+        'email': user.email, // Save the email for reference
+        'stateBarCouncil': _selectedStateBar,
+        'barRegistrationNumber': _regNumberController.text.trim(),
+      };
+
+      // 3. Get a reference to the Firestore document and save the data
+      // We are creating a document inside the 'users' collection,
+      // and the document's ID will be the user's UID.
+      await FirebaseFirestore.instance.collection('users').doc(uid).set(userData);
+
+      // 4. If successful, navigate to the dashboard
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        Navigator.of(context).pushNamedAndRemoveUntil('/lawyer-dashboard', (route) => false);
+      }
+
+    } catch (e) {
+      // Handle errors (e.g., show a snackbar)
+      Navigator.of(context).pop(); // Close loading dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save details: ${e.toString()}'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _regNumberController.dispose();
+    super.dispose();
   }
 
   @override
@@ -57,6 +100,7 @@ class _LawyerVerificationScreenState extends State<LawyerVerificationScreen> {
               ),
               const SizedBox(height: 24),
               TextFormField(
+                controller: _regNumberController,
                 decoration: const InputDecoration(labelText: 'Bar Council Registration No.'),
                 validator: (value) => value == null || value.isEmpty ? 'Registration number is required' : null,
               ),

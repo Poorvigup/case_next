@@ -97,7 +97,7 @@ class RoleSelectionScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                ...features.map((feature) => _FeatureListItem(text: feature)).toList(),
+                ...features.map((feature) => _FeatureListItem(text: feature)),
               ],
             ),
           ),
@@ -201,7 +201,7 @@ class _FeatureListItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.check_circle_outline,
             color: AppTheme.accentColor,
             size: 20,
