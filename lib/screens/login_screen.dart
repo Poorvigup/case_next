@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordObscured = true;
 
   // --- MODIFIED: The Real Login Logic ---
-  Future<void> _performLogin() async {
+Future<void> _performLogin() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -31,13 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     try {
-      // Step 1: Sign in the user with Auth
+      // ... (The successful login logic remains the same)
       final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // Check for email verification
       if (userCredential.user == null || !userCredential.user!.emailVerified) {
         await FirebaseAuth.instance.signOut();
         if (mounted) {
@@ -49,57 +48,59 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         }
-        return; // Stop the function here
+        return;
       }
-
-      // --- NEW: FETCH USER ROLE FROM FIRESTORE ---
-      // Step 2: Get the user's document from Firestore
+      
       final uid = userCredential.user!.uid;
       final docSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!docSnapshot.exists || docSnapshot.data() == null) {
-        // This is an edge case: the user exists in Auth but not in Firestore.
-        // We should probably sign them out and show an error.
         await FirebaseAuth.instance.signOut();
         throw Exception('User data not found. Please complete the sign-up process.');
       }
 
-      // Step 3: Get the role from the document data
       final userData = docSnapshot.data()!;
       final String userRole = userData['role'];
 
-      // Step 4: Navigate based on the role
       if (mounted) {
-        Navigator.of(context).pop(); // Close loading dialog
-        
+        Navigator.of(context).pop();
         String routeName;
         switch (userRole) {
-          case 'citizen':
-            routeName = '/citizen-dashboard';
-            break;
-          case 'lawyer':
-            routeName = '/lawyer-dashboard';
-            break;
-          case 'judge':
-            routeName = '/judge-dashboard';
-            break;
-          default:
-            // If role is unknown, send to login screen
-            throw Exception('Unknown user role.');
+          case 'citizen': routeName = '/citizen-dashboard'; break;
+          case 'lawyer': routeName = '/lawyer-dashboard'; break;
+          case 'judge': routeName = '/judge-dashboard'; break;
+          default: throw Exception('Unknown user role.');
         }
         Navigator.of(context).pushReplacementNamed(routeName);
       }
-      // -------------------------------------------
+
+    } on FirebaseAuthException catch (e) {
+      // --- THIS IS THE NEW, SPECIFIC ERROR HANDLING BLOCK ---
+      Navigator.of(context).pop(); // First, always close the loading dialog.
+      
+      String errorMessage;
+      // Check for the specific error code you encountered.
+      if (e.code == 'invalid-credential') {
+        errorMessage = 'Incorrect email or password. Please try again.';
+      } else {
+        // Handle other possible Firebase Auth errors if needed.
+        errorMessage = 'An authentication error occurred. Please try again later.';
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+      );
+      // --------------------------------------------------------
 
     } catch (e) {
-      // Generic error handling for both Auth and Firestore errors
+      // This will catch other errors, like Firestore or network issues.
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        SnackBar(content: Text('An unexpected error occurred: ${e.toString()}'), backgroundColor: Colors.red),
       );
     }
   }
-
+  
   @override
   void dispose() {
     // Clean up the controllers when the widget is removed

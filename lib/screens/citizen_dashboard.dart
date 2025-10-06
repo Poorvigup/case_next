@@ -54,7 +54,9 @@ class _CitizenDashboardState extends State<CitizenDashboard> {
                 },
               ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pushNamed('/file-new-case');
+          },
           label: const Text('File a New Case'),
           icon: const Icon(Icons.upload_file),
         ),

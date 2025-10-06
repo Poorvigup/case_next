@@ -1,3 +1,4 @@
+import 'package:case_next/screens/file_new_case_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:case_next/theme/app_theme.dart';
 import 'package:case_next/screens/login_screen.dart';
@@ -47,6 +48,7 @@ class CaseNextApp extends StatelessWidget {
         '/lawyer-dashboard': (context) => const LawyerDashboard(),
         '/judge-dashboard': (context) => const JudgeDashboard(),
         '/user-profile': (context) => const UserProfileScreen(),
+        '/file-new-case': (context) => const FileNewCaseScreen(),
       },
     );
   }
